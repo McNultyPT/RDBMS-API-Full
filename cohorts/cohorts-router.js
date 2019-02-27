@@ -72,4 +72,30 @@ router.delete('/:id', (req, res) => {
         });
 });
 
+router.put('/:id', (req, res) => {
+    const cohortInfo = req.body;
+    const id = req.params.id;
+
+    if (!cohortInfo.name)
+        return res.status(400).json({ errorMessage: 'Please provide a name for the cohort.' });
+
+    db('cohorts')
+        .where({ id })
+        .update(cohortInfo)
+        .then(count => {
+            if (count > 0) {
+                db('cohorts')
+                    .where({ id })
+                    .then(cohort => {
+                        res.status(200).json(cohort);
+                    });
+            } else {
+                res.status(404).json({ errorMessage: 'A cohort with that ID does not exist.' });
+            }
+        })
+        .catch(() => {
+            res.status(500).json({ error: 'There was an error while updating the cohort information.' });
+        });
+});
+
 module.exports = router;
