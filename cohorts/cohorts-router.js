@@ -32,4 +32,26 @@ router.get('/:id', (req,res) => {
         });
 });
 
+router.post('/', (req, res) => {
+    const cohortInfo = req.body;
+
+    if (!cohortInfo.name)
+        return res.status(400).json({ errorMessage: 'Please provide a name for the cohort.' });
+
+    db('cohorts')
+        .insert(req.body)
+        .then(ids => {
+            const [id] = ids;
+
+            db('cohorts')
+                .where({ id })
+                .then(cohort => {
+                    res.status(201).json(cohort);
+                });
+        })
+        .catch(() => {
+            res.status(500).json({ error: 'There was an error while saving the cohort.' });
+        });
+});
+
 module.exports = router;
