@@ -15,17 +15,36 @@ router.get('/', (req, res) => {
         });
 });
 
-router.get('/:id', (req, res) => {
-    const id = req.params.id
+// router.get('/:id', (req, res) => {
+//     const id = req.params.id
 
-    db('students')
+//     db('students')
+//         .where({ id })
+//         .then(student => {
+//            if (student.length > 0) {
+//                res.status(200).json(student);
+//            } else {
+//                res.status(404).json({ errorMessage: 'A student with that ID does not exist.' });
+//            }
+//         })
+//         .catch(() => {
+//             res.status(500).json({ error: 'The student could not be retrieved.' });
+//         });
+// });
+
+router.get('/:id', (req, res) => {
+    const id = req.params.id;
+
+    db('cohorts')
         .where({ id })
-        .then(student => {
-           if (student.length > 0) {
-               res.status(200).json(student);
-           } else {
-               res.status(404).json({ errorMessage: 'A student with that ID does not exist.' });
-           }
+        .then(cohort => {
+            db('students')
+                .where({ cohort_id: id })
+                .then(students => {
+                    cohort.students = students;
+                    
+                    res.status(200).json(cohort)
+                })
         })
         .catch(() => {
             res.status(500).json({ error: 'The student could not be retrieved.' });
