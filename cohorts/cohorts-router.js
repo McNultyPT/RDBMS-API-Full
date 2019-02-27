@@ -32,6 +32,25 @@ router.get('/:id', (req,res) => {
         });
 });
 
+router.get('/:id/students', (req, res) => {
+    const id = req.params.id;
+
+    db('cohorts')
+        .where({ id })
+        .first()
+        .then(cohort => {
+            db('students')
+                .where({ cohort_id: id })
+                .then(students=> {
+                    cohort.students = students;
+                    res.status(200).json(cohort)
+                })
+        })
+        .catch(() => {
+            res.status(500).json({ error: 'The students for that cohort could not be retrieved.' });
+        });
+});
+
 router.post('/', (req, res) => {
     const cohortInfo = req.body;
 
