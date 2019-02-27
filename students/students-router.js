@@ -54,4 +54,22 @@ router.post('/', (req, res) => {
         });
 });
 
+router.delete('/:id', (req, res) => {
+    const id = req.params.id;
+
+    db('students')
+        .where ({ id })
+        .del()
+        .then(count => {
+            if (count > 0) {
+                res.status(204).json({ message: 'Student was deleted.' })
+            } else {
+                res.status(204).json({ errorMessage: 'A student with that ID does not exist.' });
+            }
+        })
+        .catch(() => {
+            res.status(500).json({ error: 'There was an error while deleting that student.' });
+        });
+});
+
 module.exports = router;
